@@ -19,6 +19,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "priority_queue.h"
 #include "main.h"
 #include "cmsis_os.h"
 
@@ -34,15 +35,14 @@ typedef enum {
 } ao_led_message_t;
 
 typedef struct {
-    QueueHandle_t hqueue;
-    uint16_t time_on;
+	priority_queue_handle_t * hqueue;
 } ao_led_handle_t;
 
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
 
-bool ao_led_send(ao_led_handle_t* hao, ao_led_message_t msg);
+bool ao_led_send(ao_led_handle_t* hao, item_t item);
 
 bool ao_led_init(ao_led_handle_t* hao);
 

@@ -43,9 +43,9 @@
 #include "task_button.h"
 #include "ao_ui.h"
 #include "ao_led.h"
+#include "priority_queue.h"
 
 /********************** macros and definitions *******************************/
-#define TIME_LED_ON_MS		5000
 
 /********************** internal data declaration ****************************/
 
@@ -55,7 +55,7 @@
 
 /********************** external data declaration *****************************/
 ao_ui_handle_t hao_ui;
-ao_led_handle_t hao_led = {NULL, TIME_LED_ON_MS};
+ao_led_handle_t hao_led;
 
 /********************** external functions definition ************************/
 void app_init(void) {

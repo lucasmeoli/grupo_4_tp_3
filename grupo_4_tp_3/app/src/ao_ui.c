@@ -8,7 +8,6 @@
 
 
 /********************** inclusions *******************************************/
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,6 +17,7 @@
 #include "board.h"
 #include "logger.h"
 #include "dwt.h"
+#include "priority_queue.h"
 
 #include "ao_ui.h"
 #include "ao_led.h"
@@ -37,9 +37,36 @@
 extern ao_led_handle_t hao_led;
 
 /********************** internal functions definition ************************/
+static item_t get_item_from_msg(ao_led_message_t msg) {
+	item_t item;
+	item.value = (int16_t)msg;
+
+	switch (msg) {
+		case AO_LED_MESSAGE_RED_LED_ON:
+			item.priority = HIGH_PRIORITY;
+			break;
+
+		case AO_LED_MESSAGE_GREEN_LED_ON:
+			item.priority = MEDIUM_PRIORITY;
+			break;
+
+		case AO_LED_MESSAGE_BLUE_LED_ON:
+			item.priority = LOW_PRIORITY;
+			break;
+
+		default:
+			LOGGER_INFO("AO UI: error ");
+			break;
+	}
+
+	return item;
+}
+
+
 
 static void task_(void *argument) {
     ao_ui_handle_t* hao = (ao_ui_handle_t*)argument;
+    item_t item;
 
     while (true) {
         ao_ui_message_t msg;
@@ -49,15 +76,18 @@ static void task_(void *argument) {
                   break;
 
               case AO_UI_MESSAGE_BUTTON_PULSE:
-                  ao_led_send(&hao_led, AO_LED_MESSAGE_RED_LED_ON);
+            	  item = get_item_from_msg(AO_LED_MESSAGE_RED_LED_ON);
+                  ao_led_send(&hao_led, item);
                   break;
 
               case AO_UI_MESSAGE_BUTTON_SHORT:
-                  ao_led_send(&hao_led, AO_LED_MESSAGE_GREEN_LED_ON);
+            	  item = get_item_from_msg(AO_LED_MESSAGE_GREEN_LED_ON);
+                  ao_led_send(&hao_led, item);
                   break;
 
               case AO_UI_MESSAGE_BUTTON_LONG:
-                  ao_led_send(&hao_led, AO_LED_MESSAGE_BLUE_LED_ON);
+            	  item = get_item_from_msg(AO_LED_MESSAGE_BLUE_LED_ON);
+                  ao_led_send(&hao_led, item);
                   break;
 
               default:

@@ -117,8 +117,7 @@ void task_button(void* argument)
 {
   button_init_();
 
-  while(true)
-  {
+  while(true) {
     GPIO_PinState button_state;
     button_state = HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN);
 
