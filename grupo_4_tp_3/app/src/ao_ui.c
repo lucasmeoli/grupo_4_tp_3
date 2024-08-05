@@ -37,6 +37,12 @@
 extern ao_led_handle_t hao_led;
 
 /********************** internal functions definition ************************/
+/**
+ * Retrieves an item with a value and priority based on the provided LED message.
+ *
+ * @param msg The LED message to convert to an item.
+ * @return The constructed item with value and priority set according to the message.
+ */
 static item_t get_item_from_msg(ao_led_message_t msg) {
 	item_t item;
 	item.value = (int16_t)msg;
@@ -61,7 +67,6 @@ static item_t get_item_from_msg(ao_led_message_t msg) {
 
 	return item;
 }
-
 
 
 static void task_(void *argument) {
@@ -99,27 +104,19 @@ static void task_(void *argument) {
 }
 
 /********************** external functions definition ************************/
-
 bool ao_ui_send(ao_ui_handle_t* hao, ao_ui_message_t msg) {
     return (pdPASS == xQueueSend(hao->hqueue, (void*)&msg, 0));
 }
 
-bool ao_ui_init(ao_ui_handle_t* hao) {
+void ao_ui_init(ao_ui_handle_t* hao) {
     hao->hqueue = xQueueCreate(QUEUE_LENGTH_, QUEUE_ITEM_SIZE_);
-    if (NULL == hao->hqueue) {
-    	LOGGER_INFO("AO UI: error, queue creation");
-        return false;
-    }
+    configASSERT(hao->hqueue);
 
     BaseType_t status;
     status = xTaskCreate(task_, "task_ao_ui", 128, (void* const)hao, tskIDLE_PRIORITY, NULL);
-    if (pdPASS != status) {
-    	LOGGER_INFO("AO UI: error, task creation");
-    	return false;
-    }
+    configASSERT(pdPASS == status);
 
     LOGGER_INFO("AO UI: init");
-    return true;
 }
 
 /********************** end of file ******************************************/

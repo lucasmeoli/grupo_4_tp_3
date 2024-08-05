@@ -67,33 +67,25 @@ static void task_(void *argument) {
 
 		vTaskDelay((TickType_t)(TASK_PERIOD_MS_ / portTICK_PERIOD_MS));
     }
+
+    priority_queue_delete(hao_led->hqueue);
 }
 
 
 /********************** external functions definition ************************/
-
-bool ao_led_send(ao_led_handle_t* hao, item_t item) {
+void ao_led_send(ao_led_handle_t* hao, item_t item) {
 	priority_queue_enqueue(hao->hqueue, item);
-    return true;
 }
 
-bool ao_led_init(ao_led_handle_t* hao) {
-	hao->hqueue = &queue;
-	priority_queue_create(hao->hqueue);
-//    if (NULL == hao->hqueue) {
-//      LOGGER_INFO("AO LED: error, queue creation");
-//      return false;
-//    }
+void ao_led_init(ao_led_handle_t* hao) {
+	hao->hqueue = priority_queue_create();
+	configASSERT(hao->hqueue);
 
     BaseType_t status;
     status = xTaskCreate(task_, "task_ao_led", 128, (void* const)hao, tskIDLE_PRIORITY, NULL);
-    if (pdPASS != status) {
-    	LOGGER_INFO("AO LED: error, task creation");
-        return false;
-    }
+    configASSERT(pdPASS == status);
 
     LOGGER_INFO("AO LED: init");
-    return true;
 }
 
 /********************** end of file ******************************************/

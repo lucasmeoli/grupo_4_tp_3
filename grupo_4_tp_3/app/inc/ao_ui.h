@@ -42,10 +42,21 @@ typedef struct {
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
-
+/**
+ * Sends a UI message to the specified UI handle's message queue.
+ *
+ * @param hao The handle to the UI component containing the message queue.
+ * @param msg The UI message to send.
+ * @return `true` if the message was successfully sent; otherwise, `false`.
+ */
 bool ao_ui_send(ao_ui_handle_t* hao, ao_ui_message_t msg);
 
-bool ao_ui_init(ao_ui_handle_t* hao);
+/**
+ * Initializes the UI handle by setting up the message queue and creating the task.
+ *
+ * @param hao The handle to the UI component to initialize.
+ */
+void ao_ui_init(ao_ui_handle_t* hao);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus

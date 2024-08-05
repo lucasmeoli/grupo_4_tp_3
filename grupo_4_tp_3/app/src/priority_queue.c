@@ -17,6 +17,12 @@
 /********************** external data definition *****************************/
 
 /********************** internal functions definition ************************/
+/**
+ * Retrieves the index of the item with the highest priority in the queue.
+ *
+ * @param hqueue The handle to the priority queue.
+ * @return The index of the item with the highest priority in the queue.
+ */
 static int peek(priority_queue_handle_t * hqueue) {
 	priority_level_t highestPriority = NONE_PRIORITY;
     int index = 0;
@@ -36,12 +42,25 @@ static int peek(priority_queue_handle_t * hqueue) {
 }
 /********************** external functions definition ************************/
 
-void priority_queue_create(priority_queue_handle_t * hqueue) {
-	hqueue->size = 0;
-	hqueue->mutex_h = xSemaphoreCreateMutex();
-	configASSERT(NULL != hqueue->mutex_h);
+priority_queue_handle_t * priority_queue_create() {
+	priority_queue_handle_t * new_queue;
 
-	memset(hqueue->queue, 0, QUEUE_SIZE * sizeof(item_t));
+	new_queue = (priority_queue_handle_t *) pvPortMalloc(sizeof(priority_queue_handle_t));
+
+	configASSERT(new_queue);
+
+	new_queue->size = 0;
+	new_queue->mutex_h = xSemaphoreCreateMutex();
+	configASSERT(NULL != new_queue->mutex_h);
+
+	memset(new_queue->queue, 0, QUEUE_SIZE * sizeof(item_t));
+
+	return new_queue;
+}
+
+void priority_queue_delete(priority_queue_handle_t * hqueue) {
+	configASSERT(hqueue);
+	vPortFree(hqueue);
 }
 
 void priority_queue_enqueue(priority_queue_handle_t * hqueue, item_t new_item) {
@@ -77,7 +96,6 @@ int16_t priority_queue_dequeue(priority_queue_handle_t * hqueue) {
 
     return ret;
 }
-
 
 /********************** end of file ******************************************/
 
