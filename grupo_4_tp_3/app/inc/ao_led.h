@@ -41,10 +41,20 @@ typedef struct {
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
+/**
+ * Sends an item to the LED handle's priority queue.
+ *
+ * @param hao The handle to the LED component containing the priority queue.
+ * @param item The item to enqueue in the priority queue.
+ */
+void ao_led_send(ao_led_handle_t* hao, item_t item);
 
-bool ao_led_send(ao_led_handle_t* hao, item_t item);
-
-bool ao_led_init(ao_led_handle_t* hao);
+/**
+ * Initializes the LED handle by setting up the priority queue and creating the task.
+ *
+ * @param hao The handle to the LED component to initialize.
+ */
+void ao_led_init(ao_led_handle_t* hao);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus

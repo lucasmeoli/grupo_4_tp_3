@@ -17,9 +17,8 @@ extern "C" {
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-/********************** macros ***********************************************/
 
-#define QUEUE_SIZE 		30
+/********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
 typedef enum {
@@ -36,17 +35,42 @@ typedef struct {
 } item_t;
 
 typedef struct {
-	item_t queue[QUEUE_SIZE];
+	item_t * queue;
 	int16_t size;
 	SemaphoreHandle_t mutex_h;
 } priority_queue_handle_t;
 
-
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
-void priority_queue_create(priority_queue_handle_t * hqueue);
+/**
+ * Creates a new priority queue and initializes its components.
+ *
+ * @return A pointer to the newly created priority queue handle.
+ */
+priority_queue_handle_t * priority_queue_create(UBaseType_t queue_size);
+
+/**
+ * Deletes the priority queue and frees associated memory.
+ *
+ * @param hqueue The handle to the priority queue to delete.
+ */
+void priority_queue_delete(priority_queue_handle_t * hqueue);
+
+/**
+ * Enqueues a new item into the priority queue.
+ *
+ * @param hqueue The handle to the priority queue.
+ * @param new_item The item to enqueue in the priority queue.
+ */
 void priority_queue_enqueue(priority_queue_handle_t * hqueue, item_t new_item);
+
+/**
+ * Dequeues the highest priority item from the priority queue and returns its value.
+ *
+ * @param hqueue The handle to the priority queue.
+ * @return The value of the dequeued item, or -1 if the queue is empty.
+ */
 int16_t priority_queue_dequeue(priority_queue_handle_t * hqueue);
 
 /********************** End of CPP guard *************************************/
