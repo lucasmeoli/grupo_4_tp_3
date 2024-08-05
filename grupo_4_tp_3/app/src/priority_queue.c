@@ -24,15 +24,15 @@
  * @return The index of the item with the highest priority in the queue.
  */
 static int peek(priority_queue_handle_t * hqueue) {
-	priority_level_t highestPriority = NONE_PRIORITY;
+	priority_level_t highest_priority = NONE_PRIORITY;
     int index = 0;
 
     for (int i = 0; i < hqueue->size; i++) {
-        if (highestPriority < hqueue->queue[i].priority) {
-            highestPriority = hqueue->queue[i].priority;
+        if (highest_priority < hqueue->queue[i].priority) {
+        	highest_priority = hqueue->queue[i].priority;
             index = i;
 
-            if(highestPriority == HIGH_PRIORITY) {
+            if(highest_priority == HIGH_PRIORITY) {
             	break;
             }
         }
@@ -42,28 +42,33 @@ static int peek(priority_queue_handle_t * hqueue) {
 }
 /********************** external functions definition ************************/
 
-priority_queue_handle_t * priority_queue_create() {
-	priority_queue_handle_t * new_queue;
+priority_queue_handle_t * priority_queue_create(UBaseType_t queue_size) {
+	priority_queue_handle_t * hqueue;
 
-	new_queue = (priority_queue_handle_t *) pvPortMalloc(sizeof(priority_queue_handle_t));
+	hqueue = (priority_queue_handle_t *) pvPortMalloc(sizeof(priority_queue_handle_t));
+	configASSERT(hqueue);
 
-	configASSERT(new_queue);
+	hqueue->queue = (item_t *) pvPortMalloc(sizeof(item_t) * queue_size);
+	configASSERT(hqueue->queue);
 
-	new_queue->size = 0;
-	new_queue->mutex_h = xSemaphoreCreateMutex();
-	configASSERT(NULL != new_queue->mutex_h);
+	hqueue->size = 0;
+	hqueue->mutex_h = xSemaphoreCreateMutex();
+	configASSERT(NULL != hqueue->mutex_h);
 
-	memset(new_queue->queue, 0, QUEUE_SIZE * sizeof(item_t));
+	memset(hqueue->queue, 0, queue_size * sizeof(item_t));
 
-	return new_queue;
+	return hqueue;
 }
 
 void priority_queue_delete(priority_queue_handle_t * hqueue) {
 	configASSERT(hqueue);
+	configASSERT(hqueue->queue);
+	vPortFree(hqueue->queue);
 	vPortFree(hqueue);
 }
 
 void priority_queue_enqueue(priority_queue_handle_t * hqueue, item_t new_item) {
+	configASSERT(hqueue);
 	xSemaphoreTake(hqueue->mutex_h, portMAX_DELAY);
 	{
 	    // Insert new element
@@ -77,6 +82,8 @@ void priority_queue_enqueue(priority_queue_handle_t * hqueue, item_t new_item) {
 
 int16_t priority_queue_dequeue(priority_queue_handle_t * hqueue) {
 	int16_t ret = -1;
+
+	configASSERT(hqueue);
 	xSemaphoreTake(hqueue->mutex_h, portMAX_DELAY);
 	{
 		if (hqueue->size != 0) {

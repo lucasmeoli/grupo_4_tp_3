@@ -19,7 +19,6 @@ extern "C" {
 #include <stdbool.h>
 
 /********************** macros ***********************************************/
-#define QUEUE_SIZE 		30
 
 /********************** typedef **********************************************/
 typedef enum {
@@ -36,7 +35,7 @@ typedef struct {
 } item_t;
 
 typedef struct {
-	item_t queue[QUEUE_SIZE];
+	item_t * queue;
 	int16_t size;
 	SemaphoreHandle_t mutex_h;
 } priority_queue_handle_t;
@@ -49,7 +48,7 @@ typedef struct {
  *
  * @return A pointer to the newly created priority queue handle.
  */
-priority_queue_handle_t * priority_queue_create();
+priority_queue_handle_t * priority_queue_create(UBaseType_t queue_size);
 
 /**
  * Deletes the priority queue and frees associated memory.

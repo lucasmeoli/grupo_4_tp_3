@@ -23,7 +23,6 @@
 #include "ao_led.h"
 
 /********************** macros and definitions *******************************/
-
 #define QUEUE_LENGTH_            (10)
 #define QUEUE_ITEM_SIZE_         (sizeof(ao_ui_message_t))
 
