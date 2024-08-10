@@ -36,6 +36,7 @@ typedef struct {
 
 typedef struct {
 	item_t * queue;
+	UBaseType_t max_size;
 	int16_t size;
 	SemaphoreHandle_t mutex_h;
 } priority_queue_handle_t;

@@ -13,7 +13,7 @@
 #include "ao_led.h"
 
 /********************** macros and definitions *******************************/
-#define QUEUE_SIZE_              (10)
+#define QUEUE_SIZE_              (50)
 #define QUEUE_ITEM_SIZE_         (sizeof(ao_led_message_t))
 
 #define TASK_PERIOD_MS_          (500)

@@ -52,6 +52,7 @@ priority_queue_handle_t * priority_queue_create(UBaseType_t queue_size) {
 	configASSERT(hqueue->queue);
 
 	hqueue->size = 0;
+	hqueue->max_size = queue_size;
 	hqueue->mutex_h = xSemaphoreCreateMutex();
 	configASSERT(NULL != hqueue->mutex_h);
 
@@ -71,11 +72,13 @@ void priority_queue_enqueue(priority_queue_handle_t * hqueue, item_t new_item) {
 	configASSERT(hqueue);
 	xSemaphoreTake(hqueue->mutex_h, portMAX_DELAY);
 	{
-	    // Insert new element
-	    hqueue->queue[hqueue->size].value = new_item.value;
-	    hqueue->queue[hqueue->size].priority = new_item.priority;
+	    // Insert new element if queue is not complete
+		if (hqueue->size < hqueue->max_size) {
+		    hqueue->queue[hqueue->size].value = new_item.value;
+		    hqueue->queue[hqueue->size].priority = new_item.priority;
 
-	    hqueue->size++;
+		    hqueue->size++;
+		}
 	    xSemaphoreGive(hqueue->mutex_h);
 	}
 }
